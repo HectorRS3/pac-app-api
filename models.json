@@ -1,0 +1,34 @@
+{
+    "models": [
+        "user": {
+            "firstName": "Sequelize.STRING",
+            "lastName": "Sequelize.STRING",
+            "username": "Sequelize.STRING",
+            "password": "Sequelize.STRING"
+        },
+    
+        "actividades": {
+            "title": "Sequelize.STRING",
+            "organizer": "Sequelize.STRING",
+            "date": "Sequelize.DATE",
+            "description": "Sequelize.STRING",
+            "link": "Sequelize.STRING"
+        },
+    
+        "ayuda": {
+            "title": "Sequelize.STRING",
+            "number": "Sequelize.STRING",
+            "link": "Sequelize.STRING"
+        },
+    
+        "post": {
+            "title": "Sequelize.STRING",
+            "author": "Sequelize.STRING",
+            "summary": "Sequelize.STRING",
+            "body": "Sequelize.STRING",
+            "link": "Sequelize.STRING",
+            "tags": "Sequelize.JSON",
+            "category": "Sequelize.STRING"
+        }
+    ]
+}
