@@ -10,14 +10,12 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Tag.belongsTo(models.Post, {
-        foreignKey: 'post_id'
-      })
+      // define association here
     }
   };
   Tag.init({
     post_id: DataTypes.INTEGER,
-    title: DataTypes.STRING,
+    title: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Tag',

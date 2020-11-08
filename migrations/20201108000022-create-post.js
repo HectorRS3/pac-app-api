@@ -23,12 +23,8 @@ module.exports = {
       link: {
         type: Sequelize.STRING
       },
-      category_id: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'Categories',
-          key: 'id'
-        }
+      category: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,

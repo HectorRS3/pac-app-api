@@ -12,9 +12,13 @@ module.exports = {
      * }], {});
     */
    await queryInterface.bulkInsert('Categories', [{
-     title: "Recursos"
+     title: "Recursos",
+     createdAt: new Date(),
+     updatedAt: new Date()
    },{
-     title: "Educacion"
+     title: "Educacion",
+     createdAt: new Date(),
+     updatedAt: new Date()
    }], {})
   },
 

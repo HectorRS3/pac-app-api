@@ -19,7 +19,9 @@ module.exports = {
        firstName: "Test", 
        lastName: "Administrator",
        username: "administrator",
-       password: hashPassword
+       password: hashPassword,
+       createdAt: new Date(),
+       updatedAt: new Date()
       }], {})
   },
 
