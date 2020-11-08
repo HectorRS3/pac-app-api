@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const Post = require('../models/Post');
+const models = require('../models');
 
 // http://localhost:8080/posts/
 router.get("/", async function (req, res) {
@@ -9,7 +9,7 @@ router.get("/", async function (req, res) {
         // const { token } = req.headers;
         // await jwt.verify(token, process.env.SECRET, { algorithm: 'HS256' });
         // const {filter} = req.headers;
-        const posts = await Post.findAll();
+        const posts = await models.Post.findAll();
         res.send(posts);
     } catch (error) {
         console.error(error.message, error.stack);
@@ -22,7 +22,7 @@ router.get("/:id", async function (req, res) {
         // const { token } = req.headers;
         const { id } = req.params;
         // await jwt.verify(token, process.env.SECRET, { algorithm: 'HS256' });
-        const post = await Post.find({ where: { id: id } });
+        const post = await models.Post.find({ where: { id: id } });
         res.send(post);
     } catch (error) {
         console.error(error.message, error.stack);
@@ -38,19 +38,15 @@ router.post("/create", async function (req, res) {
             summary,
             body,
             link,
-            tags,
-            category
         } = req.body;
 
         await jwt.verify(token, process.env.SECRET, { algorithm: 'HS256' });
-        const newPost = new Post({
+        const newPost = await models.Post.create({
             title: title,
             author: author,
             summary: summary,
             body: body,
-            link: link,
-            tags: tags,
-            category: category
+            link: link
         });
 
         await newPost.save();
@@ -69,20 +65,16 @@ router.put("/update/:id", async function (req, res) {
             author,
             summary,
             body,
-            link,
-            tags,
-            category
+            link
         } = req.body;
 
         await jwt.verify(token, process.env.SECRET, { algorithm: 'HS256' });
-        const post = Post.find({ where: { id: id } });
+        const post = await models.Post.find({ where: { id: id } });
         post.title = title;
         post.author = author;
         post.summary = summary;
         post.body = body;
         post.link = link;
-        post.tags = tags;
-        post.category = category;
         await post.save();
         res.send({ message: "Post has been updated!", post: post });
     } catch (error) {
@@ -95,7 +87,7 @@ router.delete("/delete/:id", async function (req, res) {
         const { token } = req.headers;
         const { id } = req.params;
         await jwt.verify(token, process.env.SECRET, { algorithm: 'HS256' });
-        const post = post.find({ where: { id: id } });
+        const post = await models.Post.find({ where: { id: id } });
         await post.remove();
         res.send({ message: "Post has been deleted!" });
     } catch (error) {
