@@ -6,7 +6,7 @@ const models = require('../models');
 // http://localhost:8080/actividades/
 router.get("/", async function (req, res) {
     try {
-        const actividades = await models.Activity.findAll();
+        const actividades = await models.Event.findAll();
         res.send(actividades);
     } catch (error) {
         console.error(error.message, error.stack);
@@ -17,7 +17,7 @@ router.get("/", async function (req, res) {
 router.get("/:id", async function (req, res) {
     try {
         const { id } = req.params;
-        const actividad = await models.Activity.findOne({ where: { id: id } });
+        const actividad = await models.Event.findOne({ where: { id: id } });
         res.send(actividad);
     } catch (error) {
         console.error(error.message, error.stack);
@@ -37,7 +37,7 @@ router.post("/create", async function (req, res) {
         } = req.body;
 
         await jwt.verify(token, process.env.SECRET, { algorithm: 'HS256' });
-        const newActivity = await models.Activity.create({
+        const newActivity = await models.Event.create({
             title: title,
             organizer: organizer,
             date: date,
@@ -66,7 +66,7 @@ router.put("/update/:id", async function (req, res) {
 
 
         await jwt.verify(token, process.env.SECRET, { algorithm: 'HS256' });
-        const actividad = await models.Activity.find({ where: { id: id } });
+        const actividad = await models.Event.find({ where: { id: id } });
         actividad.title = title;
         actividad.organizer = organizer;
         actividad.date = date;
@@ -84,7 +84,7 @@ router.delete("/delete/:id", async function (req, res) {
         const { token } = req.headers;
         const { id } = req.params;
         await jwt.verify(token, process.env.SECRET, { algorithm: 'HS256' });
-        const actividad = await models.Activity.find({ where: { id: id } });
+        const actividad = await models.Event.find({ where: { id: id } });
         await actividad.remove();
         res.send({ message: "Activity has been deleted!" });
     } catch (error) {
