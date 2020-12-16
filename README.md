@@ -1,6 +1,12 @@
 # Pac App API
 ## Pac app API code
 
+To download the code, execute the following script:
+
+```shell
+$ git clone https://github.com/juan1003/pac-app-api.git
+```
+
 You should first create a .env file with the following variables
 
 - NODE_ENV="development"
