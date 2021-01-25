@@ -79,7 +79,7 @@ router.post('/login', async function (req, res) {
     try {
         const { username, password } = req.body;
 
-        const user = await repository.user.get({ username });
+        const user = await repository.user.get(username);
 
         if(!user) {
             res.status(404).json({
@@ -87,7 +87,7 @@ router.post('/login', async function (req, res) {
             });
         }
 
-        const pass = await bcrypt.compare(password, user.password);
+        const pass = await bcrypt.compare(password, user[0].dataValues.password);
 
         if(!pass) {
             res.status(401).json({

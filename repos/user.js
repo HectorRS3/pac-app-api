@@ -1,12 +1,11 @@
-const { Op } = require('sequelize');
 const models = require('../models');
 const bcrypt = require("bcrypt");
 
 const User = () => {
-    const get = () => {
+    const get = (username) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const users = await models.User.findAll();
+                const users = await models.User.findAll({ username });
                 resolve(users);
             } catch (error) {
                 reject(error);
