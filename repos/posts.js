@@ -27,24 +27,24 @@ const Posts = () => {
         });
     }
 
-    const add = help => {
+    const add = post => {
         return new Promise(async (resolve, reject) => {
             try {
-                const insertedHelp = await models.Help.create(help);
-                await insertedHelp.save();
-                resolve(insertedHelp);
+                const insertedPost = await models.Post.create(post);
+                await insertedPost.save();
+                resolve(insertedPost);
             } catch (error) {
                 reject(error);
             }
         });
     }
 
-    const update = (id, help) => {
+    const update = (id, post) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const updatedHelp = await models.Help.findOneAndReplace({id}, help);
-                await updatedHelp.save();
-                resolve(updatedHelp);
+                const updatedPost = await models.Post.findOneAndReplace({id}, post);
+                await updatedPost.save();
+                resolve(updatedPost);
             } catch (error) {
                 reject(error);
             }
@@ -54,8 +54,8 @@ const Posts = () => {
     const remove = id => {
         return new Promise(async (resolve, reject) => {
             try {
-                const removedHelp = await models.Help.findOneAndDelete({id});
-                resolve(removedHelp);
+                const removedPost = await models.Help.findOneAndDelete({id});
+                resolve(removedPost);
             } catch (error) {
                 reject(error);
             }
