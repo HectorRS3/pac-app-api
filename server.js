@@ -14,7 +14,7 @@ const ayudasRoutes = require("./routes/Ayuda");
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(cp());
-app.use(morgan());
+app.use(morgan('combined'));
 app.use(helmet());
 app.use(cors());
 
