@@ -7,9 +7,9 @@ const { sign } = require('jsonwebtoken');
 
 router.get("/", restrict, async function(req, res){
     try {
-        const query = req.query;
-        const { limit } = req.headers;
-        const users = await repository.user.get(query, limit);
+        // const query = req.query;
+        // const { limit } = req.headers;
+        const users = await repository.user.get();
         res.status(200).json(users);
     } catch (error) {
         res.status(500).json({

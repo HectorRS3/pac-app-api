@@ -5,9 +5,9 @@ const repository = require('../repos');
 
 router.get("/", async function (req, res) {
     try {
-        const query = req.query;
-        const { limit } = req.headers;
-        const helpList = await repository.help.get(query, limit);
+        // const query = req.query;
+        // const { limit } = req.headers;
+        const helpList = await repository.help.get();
         res.status(200).json(helpList);
     } catch (error) {
         res.status(500).json({

@@ -2,13 +2,10 @@ const { Op } = require("sequelize");
 const models = require("../models");
 
 const Posts = () => {
-    const get = (query, limit) => {
+    const get = () => {
         return new Promise(async (resolve, reject) => {
             try {
-                const posts = await models.Post.findAll({
-                    where: {[Op.like]: query},
-                    limit
-                });
+                const posts = await models.Post.findAll();
                 resolve(posts);
             } catch (error) {
                 reject(error);

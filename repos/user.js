@@ -3,13 +3,10 @@ const models = require('../models');
 const bcrypt = require("bcrypt");
 
 const User = () => {
-    const get = (query, limit) => {
+    const get = () => {
         return new Promise(async (resolve, reject) => {
             try {
-                const users = await models.User.findAll({
-                    where: {[Op.like]: query},
-                    limit
-                });
+                const users = await models.User.findAll();
                 resolve(users);
             } catch (error) {
                 reject(error);

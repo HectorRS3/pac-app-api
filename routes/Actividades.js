@@ -6,9 +6,9 @@ const repository = require('../repos');
 // http://localhost:8080/actividades/
 router.get("/", async function (req, res) {
     try {
-        const query = req.query;
-        const { limit } = req.headers;
-        const events = await repository.events.get(query, limit);
+        // const query = req.query;
+        // const { limit } = req.headers;
+        const events = await repository.events.get();
         res.status(200).json(events);
     } catch (error) {
         res.status(500).json({
