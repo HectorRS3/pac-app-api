@@ -1,86 +1,77 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const models = require('../models');
+const restrict = require("./restrict");
+const repository = require('../repos');
 
 router.get("/", async function (req, res) {
     try {
-        const ayudas = await models.Help.findAll();
-        res.send(ayudas);
+        const query = req.query;
+        const { limit } = req.headers;
+        const helpList = await repository.help.get(query, limit);
+        res.status(200).json(helpList);
     } catch (error) {
-        console.error(error.message, error.stack);
+        res.status(500).json({
+            message: error.message
+        });
     }
-})
+});
 
 router.get("/:id", async function (req, res) {
     try {
         const { id } = req.params;
-        const ayuda = await models.Help.find({ where: { id: id } });
-        res.send(ayuda);
+        const help = await repository.help.getById(id);
+        res.status(200).json(help);
     } catch (error) {
-        console.error(error.message, error.stack);
-    }
-})
-
-router.post("/create", async function (req, res) {
-    try {
-
-        const { token } = req.headers;
-        const {
-            title,
-            number,
-            link,
-        } = req.body;
-
-        await jwt.verify(token, process.env.SECRET, { algorithm: 'HS256' });
-
-        const newAyuda = await models.Help.create({
-            title: title,
-            number: number,
-            link: link
+        res.status(500).json({
+            message: error.message
         });
-
-        await newHelp.save();
-        res.send({ message: "Help has been created!", help: newAyuda });
-    } catch (error) {
-        console.error(error.message, error.stack);
     }
-})
+});
 
-router.put("/update/:id", async function (req, res) {
+router.post("/create", restrict, async function (req, res) {
     try {
-        const { token } = req.headers;
-        const { id } = req.params;
-        const {
-            title,
-            number,
-            link,
-        } = req.body;
-
-
-        await jwt.verify(token, process.env.SECRET, { algorithm: 'HS256' });
-        const ayuda = await models.Help.find({ where: { id: id } });
-        ayuda.title = title;
-        ayuda.number = number;
-        ayuda.link = link;
-        await ayuda.save();
-        res.send({ message: "Help has been updated!", ayuda: ayuda });
+        const { help } = req.body;
+        const newHelp = await repository.help.add(help);
+        res.status(201).json({ 
+            message: "Help has been created!", 
+            newHelp 
+        });
     } catch (error) {
-        console.error(error.message, error.stack);
+        res.status(500).json({
+            message: error.message
+        });
     }
-})
+});
 
-router.delete("/delete/:id", async function (req, res) {
+router.put("/update/:id", restrict, async function (req, res) {
     try {
-        const { token } = req.headers;
         const { id } = req.params;
-        await jwt.verify(token, process.env.SECRET, { algorithm: 'HS256' });
-        const ayuda = await models.Help.find({ where: { id: id } });
-        await ayuda.remove();
-        res.send({ message: "Help has been deleted!" });
+        const { help } = req.body;
+        const updatedHelp = await repository.help.update(id, help);
+        res.status(200).json({ 
+            message: "Help has been updated!", 
+            updatedHelp
+        });
     } catch (error) {
-        console.error(error.message, error.stack);
+        res.status(500).json({
+            message: error.message
+        });
     }
-})
+});
+
+router.delete("/delete/:id", restrict, async function (req, res) {
+    try {
+        const { id } = req.params;
+        const removedHelp = await repository.help.remove(id);
+        res.send({ 
+            message: "Help has been deleted!",
+            removedHelp
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+});
 
 module.exports = router;

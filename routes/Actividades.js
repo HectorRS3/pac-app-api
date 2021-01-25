@@ -1,95 +1,79 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const models = require('../models');
+const restrict = require("./restrict");
+const repository = require('../repos');
 
 // http://localhost:8080/actividades/
 router.get("/", async function (req, res) {
     try {
-        const actividades = await models.Event.findAll();
-        res.send(actividades);
+        const query = req.query;
+        const { limit } = req.headers;
+        const events = await repository.events.get(query, limit);
+        res.status(200).json(events);
     } catch (error) {
-        console.error(error.message, error.stack);
+        res.status(500).json({
+            message: error.message
+        });
     }
-})
+});
 
 // http://localhost:8080/actividades/654
 router.get("/:id", async function (req, res) {
     try {
         const { id } = req.params;
-        const actividad = await models.Event.findOne({ where: { id: id } });
-        res.send(actividad);
+        const event = await repository.events.getById(id);
+        res.status(200).json(event);
     } catch (error) {
-        console.error(error.message, error.stack);
-    }
-})
-
-router.post("/create", async function (req, res) {
-    try {
-
-        const { token } = req.headers;
-        const {
-            title,
-            organizer,
-            date,
-            description,
-            link,
-        } = req.body;
-
-        await jwt.verify(token, process.env.SECRET, { algorithm: 'HS256' });
-        const newActivity = await models.Event.create({
-            title: title,
-            organizer: organizer,
-            date: date,
-            description: description,
-            link: link
+        res.status(500).json({
+            message: error.message
         });
-
-        await newActivity.save();
-        res.send({ message: "Activity has been created!", activity: newActivity });
-    } catch (error) {
-        console.error(error.message, error.stack);
     }
-})
+});
 
-router.put("/update/:id", async function (req, res) {
+router.post("/create", restrict, async function (req, res) {
     try {
-        const { token } = req.headers;
-        const { id } = req.params;
-        const {
-            title,
-            organizer,
-            date,
-            description,
-            link,
-        } = req.body;
-
-
-        await jwt.verify(token, process.env.SECRET, { algorithm: 'HS256' });
-        const actividad = await models.Event.find({ where: { id: id } });
-        actividad.title = title;
-        actividad.organizer = organizer;
-        actividad.date = date;
-        actividad.description = description;
-        actividad.link = link;
-        await actividad.save();
-        res.send({ message: "Activity has been updated!", actividad: actividad });
+        const { event } = req.body;
+        const newEvent = await repository.event.add(event);
+        res.status(201).json({ 
+            message: "Event has been created!", 
+            newEvent 
+        });
     } catch (error) {
-        console.error(error.message, error.stack);
+        res.status(500).json({
+            message: error.message
+        });
     }
-})
+});
 
-router.delete("/delete/:id", async function (req, res) {
+router.put("/update/:id", restrict, async function (req, res) {
     try {
-        const { token } = req.headers;
         const { id } = req.params;
-        await jwt.verify(token, process.env.SECRET, { algorithm: 'HS256' });
-        const actividad = await models.Event.find({ where: { id: id } });
-        await actividad.remove();
-        res.send({ message: "Activity has been deleted!" });
+        const { event } = req.body;
+        const updatedEvent = await repository.events.update(id, event);
+        res.status(200).json({ 
+            message: "Event has been updated!", 
+            updatedEvent 
+        });
     } catch (error) {
-        console.error(error.message, error.stack);
+        res.status(500).json({
+            message: error.message
+        });
     }
-})
+});
+
+router.delete("/delete/:id", restrict, async function (req, res) {
+    try {
+        const { id } = req.params;
+        const removedEvent = await repository.events.remove(id);
+        res.status(200).json({ 
+            message: "Event has been deleted!",
+            removedEvent
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+});
 
 module.exports = router;

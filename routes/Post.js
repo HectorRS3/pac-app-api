@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
+const restrict = require('./restrict');
 const models = require('../models');
 
 // http://localhost:8080/posts/

@@ -1,118 +1,112 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const models = require('../models');
+const restrict = require('./restrict');
+const repository = require('../repos');
+const { sign } = require('jsonwebtoken');
 
-router.get("/", async function(req, res){
+router.get("/", restrict, async function(req, res){
     try {
-        const {token} = req.headers;
-        await jwt.verify(token, process.env.SECRET, {algorithm: 'HS256'})
-        const users = await models.User.findAll();
-        res.send(users);
+        const query = req.query;
+        const { limit } = req.headers;
+        const users = await repository.user.get(query, limit);
+        res.status(200).json(users);
     } catch (error) {
-        console.error(error.message, error.stack);
+        res.status(500).json({
+            message: error.message
+        });
     }
-    
-})
+});
 
-router.get("/:id", async function(req, res){
+router.get("/:id", restrict, async function(req, res){
     try {
-        const {token} = req.headers;
-        const {id} = req.params;
-        await jwt.verify(token, process.env.SECRET, {algorithm: 'HS256'})
-        const user = await models.User.findOne({where: {id: id}});
-        res.send(user);
+        const { id } = req.params;
+        const user = await repository.user.getById(id);
+        res.status(200).json(user);
     } catch (error) {
-        console.error(error.message, error.stack)
+        res.status(500).json({
+            message: error.message
+        });
     }
-})
+});
 
-router.post('/create', async function (req, res) {
-    console.log(req.body);
+router.post('/create', restrict, async function (req, res) {
     try {
-        const { firstName, lastName, username, password } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = await models.User.create({firstName: firstName, lastName: lastName, username: username, password: hashedPassword});
-        await newUser.save();
-        res.status(201).send({message: "User created successfully!"});
+        const { user } = req.body;
+        const newUser = await repository.user.add(user);
+        res.status(201).json({
+            message: "User created successfully!",
+            newUser
+        });
     } catch (error) {
-        console.error(error.message, error.stack);
+        res.status(500).json({
+            message: error.message
+        });
     }
-})
+});
 
-router.put("/update/:id", async function (req, res){
+router.put("/update/:id", restrict, async function (req, res){
     try {
-        const {token} = req.headers;
-        const {id} = req.params;
-        const { firstName, lastName, username } = req.body;
-        await jwt.verify(token, process.env.SECRET, {algorithm: 'HS256'})
-        const user = await models.User.findOne({where: {id: id}})
-        user.firstName = firstName
-        user.lastName = lastName
-        user.username = username
-        await user.save()
-        res.send({ message: "User information has been updated!" })
+        const { id } = req.params;
+        const { user } = req.body;
+        const updatedUser = await repository.user.update(id, user);
+        res.status(200).json({
+            message: "User has been updated.",
+            updatedUser
+        });
     } catch (error) {
-        console.error(error.message, error.stack)
+        res.status(500).json({
+            message: error.message
+        });
     }
-})
+});
 
-router.delete("/delete/:id", async function(req, res){
-    console.log(req.params)
+router.delete("/delete/:id", restrict, async function(req, res){
     try {
-        const {token} = req.headers;
-        const {id} = req.params;
-        await jwt.verify(token, process.env.SECRET, {algorithm: 'HS256'})
-        await models.User.destroy({where: {id: id}});
-        res.send({ message: `User ${id} has been removed` })
+        const { id } = req.params;
+        const removedUser = await repository.user.remove(id);
+        res.status(200).json({ 
+            message: `User ${removedUser} has been removed` 
+        });
     } catch (error) {
-        console.error(error.message, error.stack)
+        res.status(500).json({
+            message: error.message
+        });
     }
-})
+});
 
 router.post('/login', async function (req, res) {
     try {
-        const {username, password} = req.body;
-        const user = await models.User.findOne({ where: { username: username }});
-        bcrypt.compare(password, user.dataValues.password, function(err, pass){
-            if(err) console.log(err.message, err.stack);
+        const { username, password } = req.body;
 
-            if(pass) {
-                const token = jwt.sign({username, password, iat: Date.now()}, process.env.SECRET, {algorithm: 'HS256'});
-                res.status(200).send({
-                    message: "Logged in successfully!",
-                    token: token, 
-                    pass: pass
-                });
-            } else {
-                res.send({ message: "Invalid username or password.", pass: pass})
-            }
+        const user = await repository.user.get({ username });
+
+        if(!user) {
+            res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        const pass = await bcrypt.compare(password, user.password);
+
+        if(!pass) {
+            res.status(401).json({
+                message: "Invalid Password"
+            });
+        }
+
+        const token = await sign(JSON.stringify(user), process.env.SECRET, { algorithm: 'HS384' });
+
+        res.status(200).json({
+            message: "Signed in successfully!",
+            token
         });
-    } catch (error) {
-        console.error(error.message, error.stack);
-    }
-})
 
-router.put("/change_password", async function(req, res){
-    try {
-        const { token } = req.headers
-        const {username, currentPassword, newPassword } = req.body
-        await jwt.verify(token, process.env.SECRET, { algorithm: 'HS256' })
-        const user = await models.User.findOne({ where: { username: username }})
-        bcrypt.compare(currentPassword, user.dataValues.password, async function(error, pass){
-            try {
-                const newHashedPassword = await bcrypt.hash(newPassword, 10)
-                user.password = newHashedPassword
-                await user.save()
-                res.send({ message: "Password has been updated" })
-            } catch(error) {
-                console.error(error.message, error.stack)
-            }
-        })
     } catch (error) {
-        console.error(error.message, error.stack)
+        res.status(500).json({
+            message: error.message
+        });
     }
-})
+});
 
 module.exports = router;
