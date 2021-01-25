@@ -1,98 +1,77 @@
 const express = require('express');
 const router = express.Router();
 const restrict = require('./restrict');
-const models = require('../models');
+const repository = require('../repos');
 
-// http://localhost:8080/posts/
 router.get("/", async function (req, res) {
     try {
-        // const { token } = req.headers;
-        // await jwt.verify(token, process.env.SECRET, { algorithm: 'HS256' });
-        // const {filter} = req.headers;
-        const posts = await models.Post.findAll();
-        res.send(posts);
+        const query = req.query;
+        const { limit } = req.headers;
+        const posts = await repository.posts.get(query, limit);
+        res.status(200).json(posts);
     } catch (error) {
-        console.error(error.message, error.stack);
+        res.status(500).json({
+            message: error.message
+        });
     }
-})
+});
 
-// http://localhost:8080/posts/654
 router.get("/:id", async function (req, res) {
     try {
-        // const { token } = req.headers;
         const { id } = req.params;
-        // await jwt.verify(token, process.env.SECRET, { algorithm: 'HS256' });
-        const post = await models.Post.find({ where: { id: id } });
-        res.send(post);
+        const post = await repository.posts.getById(id);
+        res.status(200).json(post);
     } catch (error) {
-        console.error(error.message, error.stack);
-    }
-})
-
-router.post("/create", async function (req, res) {
-    try {
-        const { token } = req.headers;
-        const {
-            title,
-            author,
-            summary,
-            body,
-            link,
-        } = req.body;
-
-        await jwt.verify(token, process.env.SECRET, { algorithm: 'HS256' });
-        const newPost = await models.Post.create({
-            title: title,
-            author: author,
-            summary: summary,
-            body: body,
-            link: link
+        res.status(500).json({
+            message: error.message
         });
-
-        await newPost.save();
-        res.send({ message: "Post has been created!", post: newPost });
-    } catch (error) {
-        console.error(error.message, error.stack);
     }
-})
+});
 
-router.put("/update/:id", async function (req, res) {
+router.post("/create", restrict, async function (req, res) {
     try {
-        const { token } = req.headers;
-        const { id } = req.params;
-        const {
-            title,
-            author,
-            summary,
-            body,
-            link
-        } = req.body;
-
-        await jwt.verify(token, process.env.SECRET, { algorithm: 'HS256' });
-        const post = await models.Post.find({ where: { id: id } });
-        post.title = title;
-        post.author = author;
-        post.summary = summary;
-        post.body = body;
-        post.link = link;
-        await post.save();
-        res.send({ message: "Post has been updated!", post: post });
+        const { post } = req.body;
+        const newPost = await repository.posts.add(post);
+        res.status(201).json({ 
+            message: "Post has been created!", 
+            newPost 
+        });
     } catch (error) {
-        console.error(error.message, error.stack);
+        res.status(500).json({
+            message: error.message
+        });
     }
-})
+});
 
-router.delete("/delete/:id", async function (req, res) {
+router.put("/update/:id", restrict, async function (req, res) {
     try {
-        const { token } = req.headers;
         const { id } = req.params;
-        await jwt.verify(token, process.env.SECRET, { algorithm: 'HS256' });
-        const post = await models.Post.find({ where: { id: id } });
-        await post.remove();
-        res.send({ message: "Post has been deleted!" });
+        const { post } = req.body;
+        const updatedPost = await repository.posts.update(id, post);
+        res.status(200).json({ 
+            message: "Post has been updated!", 
+            updatedPost 
+        });
     } catch (error) {
-        console.error(error.message, error.stack);
+        res.status(500).json({
+            message: error.message
+        });
     }
-})
+});
+
+router.delete("/delete/:id", restrict, async function (req, res) {
+    try {
+        const { id } = req.params;
+        const removedPost = await repository.posts.remove(id);
+        res.status(200).json({ 
+            message: "Post has been deleted!",
+            removedPost
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        });
+    }
+});
 
 module.exports = router;
