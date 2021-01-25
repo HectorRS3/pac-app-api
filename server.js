@@ -12,7 +12,7 @@ const actividadesRoutes = require("./routes/Actividades");
 const ayudasRoutes = require("./routes/Ayuda");
 
 app.use(express.json());
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true }));
 app.use(cp());
 app.use(morgan('combined'));
 app.use(helmet());
