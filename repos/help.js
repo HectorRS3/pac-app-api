@@ -65,4 +65,4 @@ const Help = () => {
     return { get, getById, add, update, remove };
 }
 
-module.exports = Help;
+module.exports = Help();

@@ -65,4 +65,4 @@ const Events = () => {
     return { get, getById, add, update, remove };
 }
 
-module.exports = Events;
+module.exports = Events();

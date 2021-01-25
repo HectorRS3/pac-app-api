@@ -65,4 +65,4 @@ const Posts = () => {
     return { get, getById, add, update, remove };
 }
 
-module.exports = Posts;
+module.exports = Posts();

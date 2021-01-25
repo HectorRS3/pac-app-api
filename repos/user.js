@@ -68,4 +68,4 @@ const User = () => {
     return { get, getbyId, add, update, remove }
 }
 
-module.exports = User;
+module.exports = User();
