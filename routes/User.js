@@ -99,7 +99,8 @@ router.post('/login', async function (req, res) {
 
         res.status(200).json({
             message: "Signed in successfully!",
-            token
+            token,
+            pass
         });
 
     } catch (error) {
