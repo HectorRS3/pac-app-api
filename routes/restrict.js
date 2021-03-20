@@ -5,9 +5,6 @@ module.exports = (req, res, next) => {
         try {
             const pass = await verify(req.headers.token, process.env.SECRET, { algorithms: 'HS384' });
             resolve(pass);
-            res.status(200).json({
-                message: "Access Granted"
-            });
             next();
         } catch (error) {
             reject(error);
