@@ -33,7 +33,8 @@ router.get("/:id", async function (req, res) {
 router.post("/create", restrict, async function (req, res) {
     try {
         const { event } = req.body;
-        const newEvent = await repository.event.add(event);
+        console.log(event)
+        const newEvent = await repository.events.add(event);
         res.status(201).json({ 
             message: "Event has been created!", 
             newEvent 
