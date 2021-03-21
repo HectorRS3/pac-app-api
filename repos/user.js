@@ -41,8 +41,7 @@ const User = () => {
      const update = (id, user) => {
          return new Promise(async (resolve, reject) => {
              try {
-                 const updatedUser = await models.User.findOneAndReplace({ where: {id}}, user);
-                 await updatedUser.save();
+                 const updatedUser = await models.User.update(user, { where: {id}});
                  resolve(updatedUser);
              } catch (error) {
                  reject(error);
@@ -53,7 +52,7 @@ const User = () => {
      const remove = id => {
          return new Promise(async (resolve, reject) => {
              try {
-                 const removedUser = await models.User.findOneAndDelete({where: {id}});
+                 const removedUser = await models.User.destroy({where: {id}});
                  resolve(removedUser);
              } catch (error) {
                  reject(error);

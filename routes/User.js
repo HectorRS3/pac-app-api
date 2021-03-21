@@ -32,7 +32,7 @@ router.get("/:id", restrict, async function(req, res){
 
 router.post('/create', restrict, async function (req, res) {
     try {
-        const { user } = req.body;
+        const user = req.body;
         const newUser = await repository.user.add(user);
         res.status(201).json({
             message: "User created successfully!",
@@ -48,7 +48,7 @@ router.post('/create', restrict, async function (req, res) {
 router.put("/update/:id", restrict, async function (req, res){
     try {
         const { id } = req.params;
-        const { user } = req.body;
+        const user = req.body;
         const updatedUser = await repository.user.update(id, user);
         res.status(200).json({
             message: "User has been updated.",
