@@ -39,8 +39,7 @@ const Events = () => {
     const update = (id, event) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const updatedEvent = await models.Event.findOneAndReplace({id}, event);
-                await updatedEvent.save();
+                const updatedEvent = await models.Event.update(event, { where: {id} });
                 resolve(updatedEvent);
             } catch (error) {
                 reject(error);
@@ -51,7 +50,7 @@ const Events = () => {
     const remove = id => {
         return new Promise(async (resolve, reject) => {
             try {
-                const removedEvent = await models.Event.findOneAndDelete({id});
+                const removedEvent = await models.Event.destroy({where: {id}});
                 resolve(removedEvent);
             } catch (error) {
                 reject(error);
