@@ -39,8 +39,7 @@ const Posts = () => {
     const update = (id, post) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const updatedPost = await models.Post.findOneAndReplace({id}, post);
-                await updatedPost.save();
+                const updatedPost = await models.Post.update(post, {where: {id}});
                 resolve(updatedPost);
             } catch (error) {
                 reject(error);
@@ -51,7 +50,7 @@ const Posts = () => {
     const remove = id => {
         return new Promise(async (resolve, reject) => {
             try {
-                const removedPost = await models.Help.findOneAndDelete({id});
+                const removedPost = await models.Post.destroy({where: {id}});
                 resolve(removedPost);
             } catch (error) {
                 reject(error);

@@ -30,7 +30,7 @@ router.get("/:id", async function (req, res) {
 
 router.post("/create", restrict, async function (req, res) {
     try {
-        const { post } = req.body;
+        const post = req.body;
         const newPost = await repository.posts.add(post);
         res.status(201).json({ 
             message: "Post has been created!", 
@@ -46,7 +46,7 @@ router.post("/create", restrict, async function (req, res) {
 router.put("/update/:id", restrict, async function (req, res) {
     try {
         const { id } = req.params;
-        const { post } = req.body;
+        const post = req.body;
         const updatedPost = await repository.posts.update(id, post);
         res.status(200).json({ 
             message: "Post has been updated!", 
@@ -62,6 +62,7 @@ router.put("/update/:id", restrict, async function (req, res) {
 router.delete("/delete/:id", restrict, async function (req, res) {
     try {
         const { id } = req.params;
+        console.log(id);
         const removedPost = await repository.posts.remove(id);
         res.status(200).json({ 
             message: "Post has been deleted!",

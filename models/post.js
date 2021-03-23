@@ -19,7 +19,8 @@ module.exports = (sequelize, DataTypes) => {
     summary: DataTypes.STRING,
     body: DataTypes.STRING,
     link: DataTypes.STRING,
-    category: DataTypes.INTEGER
+    category: DataTypes.INTEGER,
+    tags: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'Post',
