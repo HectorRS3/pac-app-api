@@ -30,7 +30,7 @@ router.get("/:id", async function (req, res) {
 
 router.post("/create", restrict, async function (req, res) {
     try {
-        const { help } = req.body;
+        const help = req.body;
         const newHelp = await repository.help.add(help);
         res.status(201).json({ 
             message: "Help has been created!", 
@@ -46,7 +46,7 @@ router.post("/create", restrict, async function (req, res) {
 router.put("/update/:id", restrict, async function (req, res) {
     try {
         const { id } = req.params;
-        const { help } = req.body;
+        const help = req.body;
         const updatedHelp = await repository.help.update(id, help);
         res.status(200).json({ 
             message: "Help has been updated!", 

@@ -39,8 +39,7 @@ const Help = () => {
     const update = (id, help) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const updatedHelp = await models.Help.findOneAndReplace({id}, help);
-                await updatedHelp.save();
+                const updatedHelp = await models.Help.update(help, {where: {id}});
                 resolve(updatedHelp);
             } catch (error) {
                 reject(error);
@@ -51,7 +50,7 @@ const Help = () => {
     const remove = id => {
         return new Promise(async (resolve, reject) => {
             try {
-                const removedHelp = await models.Help.findOneAndDelete({id});
+                const removedHelp = await models.Help.destroy({where: {id}});
                 resolve(removedHelp);
             } catch (error) {
                 reject(error);
