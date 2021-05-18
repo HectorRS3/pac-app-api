@@ -7,8 +7,6 @@ const { sign } = require('jsonwebtoken');
 
 router.get("/", restrict, async function(req, res){
     try {
-        // const query = req.query;
-        // const { limit } = req.headers;
         const users = await repository.user.get();
         res.status(200).json(users);
     } catch (error) {
@@ -21,9 +19,12 @@ router.get("/", restrict, async function(req, res){
 router.get("/:id", restrict, async function(req, res){
     try {
         const { id } = req.params;
-        const user = await repository.user.getById(id);
-        res.status(200).json(user);
+        const user = await repository.user.getbyId(id);
+        const { firstName, lastName, username } = user.dataValues;
+
+        res.status(200).json({ firstName, lastName, username });
     } catch (error) {
+        console.error(error);
         res.status(500).json({
             message: error.message
         });
